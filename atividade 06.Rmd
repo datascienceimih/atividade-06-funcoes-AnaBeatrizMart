@@ -1,0 +1,89 @@
+---------------
+Projeto Integrador - Atividade 06
+Por Ana Beatriz Martins
+---------------
+
+```{r}
+install.packages("descr")
+install.packages("readr")
+install.packages("dplyr")
+data("iris")
+
+```
+
+1. Escreva uma função que calcule a média, a mediana, a variância e o desvio padrão de um vetor numérico. A função deve retornar os resultados numa matriz. Teste a sua função com uma variável do banco de dados iris.
+
+```{r}
+medidas = function(X) {
+  med = mean(x)
+  mediana = median(x)
+  variancia = va(x)
+  desv = sd(x)
+  
+  mat = matrix(data = c (med, mediana, variancia, desv),
+                         nrow = 1)
+
+colnames(mat) = c ("Media", "Mediana", "Variância", "Desvio Padrão")
+return(mat)
+}
+```
+
+Testando:
+
+```{r}
+data('iris')
+
+medidas(iris$Sepal.Length)
+medidas (enade14$nu_idade)
+```
+
+2. Reescreva sua função de modo que ela seja capaz de processar vetores com dados completos e vetores com missing values. Deve haver uma opção para o usuário marcar se ele quer a remoção de missings ou não. Teste a sua função com uma variável numérica do banco de dados enade. Mostre os resultados COM REMOÇÃO de missings e SEM REMOÇÃO.
+
+
+
+
+
+3. Reescreva sua função de modo que ela aceite apenas vetores do typo integer ou numeric. Se o usuário tentar passar um vetor de outro tipo, a função deve exibir um ERRO e uma mensagem com a orientação: "Object is not integer or numeric". Dica: use o comando stop("mensagem"). Teste a função com uma variável numérica, uma variável integer e um objeto de outro tipo qualquer.
+
+```{r}
+enade14 <- read.csv2("https://raw.githubusercontent.com/neylsoncrepalde/introducao_ao_r/master/dados/enade_2014_amostra.csv")
+
+medidas <- function(x, remove.na=F, std=F){
+    if(class(x) == "integer"|
+       class(x) == "numeric"){
+    if (remove.na == T){
+      x = x[!is.na(x)]
+    }
+    if (std == T){
+      x = x/sd(x)
+    }
+    med = sum(x) / length(x)
+    return(med)
+       }
+  else{
+    stop("Object is not an integer or a numeric.")
+  }
+}
+```
+
+Testando
+
+```{r}
+medidas(enade14$nt_ger, remove.na = T)
+medidas(iris$Sepal.Length, remove.na = T)
+medidas(enade14$nu_idade, remove.na = T)  
+medidas(enade14$qe_i2, remove.na = T) 
+```
+*qe_i2 não é um numeric*
+
+
+4. Agora, use a função sapply para executar sua função para todas as variáveis numéricas do banco de dados iris. Execute-a também para as variáveis idade, nota geral, nota da formação geral e nota do componente específico do banco de dados enade.
+
+```{r}
+sapply(iris[1:4], medidas)
+
+sapply (enade14$nu_idade, medidas)
+```
+
+5. Sabemos que as variáveis do questionário do estudante do ENADE relacionadas à IES possuem duas categorias que não são úteis para nossa análise, 7 e 8 (Não sei, não se aplica). Essas categorias precisam ser substituídas por NA's. Faça a substituição usando uma função programada por você e a função sapply.
+
